@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class RestRunner implements ApplicationRunner {
 
-    //@Autowired
-    //RestTemplateBuilder restTemplateBuilder;
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder;
 
     @Autowired
     WebClient.Builder builder;
@@ -22,7 +22,9 @@ public class RestRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         //RestTemplate restTemplate = restTemplateBuilder.build();
-        WebClient webClient = builder.build();
+        WebClient webClient = builder
+                .baseUrl("http://localhost:8080")
+                .build();
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -34,7 +36,7 @@ public class RestRunner implements ApplicationRunner {
         //System.out.println(worldResult);
 
 
-        Mono<String> helloMono = webClient.get().uri("http://localhost:8080/hello")
+        Mono<String> helloMono = webClient.get().uri("/hello")
                 .retrieve()
                 .bodyToMono(String.class);
         helloMono.subscribe(s -> {
@@ -46,7 +48,7 @@ public class RestRunner implements ApplicationRunner {
             stopWatch.start();
         });
 
-        Mono<String> worldMono = webClient.get().uri("http://localhost:8080/world")
+        Mono<String> worldMono = webClient.get().uri("/world")
                 .retrieve()
                 .bodyToMono(String.class);
         worldMono.subscribe(s -> {
